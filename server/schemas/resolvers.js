@@ -7,9 +7,10 @@ const resolvers = {
       // context can never be the 2nd argument - it has to be the 3rd
       //_args we are saying '_' is a placeholder, just sending something
       if (context.user) {
-        return User.findOne({ _id: context.user._id }).populate("books");
+        const foundUser = await User.findOne({ _id: context.user._id });
+        return foundUser;
       }
-      throw AuthenticationError;
+      throw new Error("Error in me");
     },
   },
 
@@ -23,13 +24,13 @@ const resolvers = {
       const user = await User.findOne({ email });
 
       if (!user) {
-        throw AuthenticationError;
+        throw new Error("Error in login");
       }
 
       const correctPw = await user.isCorrectPassword(password);
 
       if (!correctPw) {
-        throw AuthenticationError;
+        throw new Error("Wrong password");
       }
 
       const token = signToken(user);
@@ -60,8 +61,6 @@ const resolvers = {
 
         return updatedUser;
       }
-
-      throw new AuthenticationError("Something is wrong!");
     },
   },
 };
